@@ -1,39 +1,45 @@
 import React from 'react'
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { postAdded } from './postsSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { postUpdated } from './postsSlice'
+import { useHistory } from 'react-router-dom'
 
-const AddPostForm = () => {
-  const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
+const EditPostForm = ({ match }) => {
+  const { postId } = match.params
+
+  const post = useSelector((state) =>
+    state.posts.find((post) => post.id === postId)
+  )
+
+  const [title, setTitle] = useState(post.title)
+  const [content, setContent] = useState(post.content)
 
   const dispatch = useDispatch()
+  const history = useHistory()
 
   const onTitleChanged = (e) => setTitle(e.target.value)
   const onContentChanged = (e) => setContent(e.target.value)
 
   const onSavePostClicked = () => {
     if (title && content) {
-      dispatch(postAdded(title, content))
-      setTitle('')
-      setContent('')
+      dispatch(postUpdated({ id: postId, title, content }))
+      history.push(`/posts/${postId}`)
     }
   }
 
   return (
     <section>
-      <h2>ADD A NEW POST</h2>
+      <h2>Edit Post</h2>
       <form>
-        {/* Title */}
         <label htmlFor="postTitle">Post Title:</label>
         <input
           type="text"
           id="postTitle"
           name="postTitle"
+          placeholder="What's on your mind?"
           value={title}
           onChange={onTitleChanged}
         />
-        {/* Content */}
         <label htmlFor="postContent">Content:</label>
         <textarea
           id="postContent"
@@ -41,13 +47,12 @@ const AddPostForm = () => {
           value={content}
           onChange={onContentChanged}
         />
-        {/* submit button */}
-        <button type="button" onClick={onSavePostClicked}>
-          Save Post
-        </button>
       </form>
+      <button type="button" onClick={onSavePostClicked}>
+        Save Post
+      </button>
     </section>
   )
 }
 
-export default AddPostForm
+export default EditPostForm
