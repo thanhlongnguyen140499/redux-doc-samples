@@ -3,12 +3,15 @@ import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import PostAuthor from './PostAuthor'
 import TimeAgo from './TimeAgo'
+import ReactionButtons from './ReactionButtons'
 
 const PostsList = () => {
   const posts = useSelector((state) => state.posts)
 
   // sort posts in reverse chronological order by datetime string
-  const orderedPosts = posts.slice().sort((a, b) => b.date.localeCompare(a.date))
+  const orderedPosts = posts
+    .slice()
+    .sort((a, b) => b.date.localeCompare(a.date))
 
   const renderedPosts = orderedPosts.map((post) => (
     <article className="post-excerpt" key={post.id}>
@@ -18,6 +21,7 @@ const PostsList = () => {
       <br />
       <TimeAgo timestamp={post.date} />
       <br />
+      <ReactionButtons post={post} />
       <Link to={`/posts/${post.id}`}>View</Link>
       <Link to={`/editPost/${post.id}`}>Edit</Link>
     </article>
